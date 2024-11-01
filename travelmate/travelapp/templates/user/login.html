@@ -1,0 +1,56 @@
+<!-- templates/user/login.html -->
+ {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> <!-- Link to your CSS file if any -->
+</head>
+<body>
+    
+  <!-- Check if the user is authenticated -->
+ {% if user.is_authenticated %}
+    
+ <!-- Check if the user is an agency owner -->
+ {% if user.agency %}
+     {% include 'agency/header.html' %}
+ 
+ <!-- Check if the user is a staff member (admin) -->
+ {% elif user.is_staff %}
+     {% include 'travelAdmin/header.html' %}
+ 
+ <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+ {% else %}
+     {% include 'user/header.html' %}
+ {% endif %}
+ 
+<!-- If the user is not authenticated -->
+{% else %}
+ {% include 'header.html' %}
+{% endif %}
+
+    <h1>Login</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" name="username" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>

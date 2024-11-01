@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Route</title>
+</head>
+<body>
+    
+  <!-- Check if the user is authenticated -->
+ {% if user.is_authenticated %}
+    
+ <!-- Check if the user is an agency owner -->
+ {% if user.agency %}
+     {% include 'agency/header.html' %}
+ 
+ <!-- Check if the user is a staff member (admin) -->
+ {% elif user.is_staff %}
+     {% include 'travelAdmin/header.html' %}
+ 
+ <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+ {% else %}
+     {% include 'user/header.html' %}
+ {% endif %}
+ 
+<!-- If the user is not authenticated -->
+{% else %}
+ {% include 'header.html' %}
+{% endif %}
+
+    <h1>Delete Route</h1>
+    <p>Are you sure you want to delete the route {{ route.place_info }}?</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Confirm Delete</button>
+    </form>
+    <a href="{% url 'route_list' %}">Cancel</a>
+</body>
+</html>

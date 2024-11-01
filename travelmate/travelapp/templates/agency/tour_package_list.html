@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Package List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    
+  <!-- Check if the user is authenticated -->
+  {% if user.is_authenticated %}
+    
+    <!-- Check if the user is an agency owner -->
+    {% if user.agency %}
+        {% include 'agency/header.html' %}
+    
+    <!-- Check if the user is a staff member (admin) -->
+    {% elif user.is_staff %}
+        {% include 'travelAdmin/header.html' %}
+    
+    <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+    {% else %}
+        {% include 'user/header.html' %}
+    {% endif %}
+  
+  <!-- If the user is not authenticated -->
+  {% else %}
+      {% include 'header.html' %}
+  {% endif %}
+
+  <div class="container mt-5">
+      <h1 class="mb-4">Tour Package List</h1>
+      <a href="{% url 'tour_package_create' %}" class="btn btn-primary mb-3">Add New Tour Package</a>
+      <div class="row">
+          {% for tour_package in tour_packages %}
+              <div class="col-md-4 mb-4">
+                  <div class="card">
+                      {% if tour_package.package_image %}
+                          <img src="{{ tour_package.package_image.url }}" class="card-img-top" alt="{{ tour_package.title }}">
+                      {% else %}
+                          <img src="default_image_url.jpg" class="card-img-top" alt="Default Image"> <!-- Replace with a default image if needed -->
+                      {% endif %}
+                      <div class="card-body">
+                          <h5 class="card-title">{{ tour_package.title }}</h5>
+                          <h6 class="card-subtitle mb-2 text-muted">Price: ${{ tour_package.price }}</h6>
+                          <p class="card-text"><strong>Description:</strong> {{ tour_package.description }}</p>
+                          <p class="card-text"><strong>Availability:</strong> {{ tour_package.availability }}</p>
+                          <p class="card-text"><strong>Start Date:</strong> {{ tour_package.start_date }}</p>
+                          <p class="card-text"><strong>End Date:</strong> {{ tour_package.end_date }}</p>
+                          <p class="card-text"><strong>Agency:</strong> {{ tour_package.agency.name }}</p> <!-- Assuming agency has a 'name' field -->
+                          git commit -m "first commit"
+                          <div class="d-flex justify-content-between">
+                              <a href="{% url 'tour_package_update' tour_package.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                              <form action="{% url 'tour_package_delete' tour_package.pk %}" method="POST" style="display:inline;">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          {% empty %}
+              <div class="col-12">
+                  <div class="alert alert-info" role="alert">No tour packages available.</div>
+              </div>
+          {% endfor %}
+      </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

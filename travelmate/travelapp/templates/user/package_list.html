@@ -1,0 +1,77 @@
+<!-- templates/user/package_list.html -->
+ {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Packages</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> <!-- Link to your CSS file if any -->
+</head>
+<body>
+    
+  <!-- Check if the user is authenticated -->
+ {% if user.is_authenticated %}
+    
+ <!-- Check if the user is an agency owner -->
+ {% if user.agency %}
+     {% include 'agency/header.html' %}
+ 
+ <!-- Check if the user is a staff member (admin) -->
+ {% elif user.is_staff %}
+     {% include 'travelAdmin/header.html' %}
+ 
+ <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+ {% else %}
+     {% include 'user/header.html' %}
+ {% endif %}
+ 
+<!-- If the user is not authenticated -->
+{% else %}
+ {% include 'header.html' %}
+{% endif %}
+
+     <!-- Display messages -->
+     {% if messages %}
+     <div class="alert alert-info mt-3">
+         {% for message in messages %}
+             <div>{{ message }}</div>
+         {% endfor %}
+     </div>
+ {% endif %}
+
+ <div class="where_togo_area">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-3">
+                <div class="form_area">
+                    <h3>Where you want to go?</h3>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="search_wrap">
+                    <form class="search_form" action="{% url 'search_packages' %}" method="GET">
+                        <div class="input_field">
+                            <input type="text" name="route" placeholder="Route" required>
+                        </div>
+                        <div class="input_field">
+                            <input type="number" name="min_price" placeholder="Min Price" step="0.01">
+                        </div>
+                        <div class="input_field">
+                            <input type="number" name="max_price" placeholder="Max Price" step="0.01">
+                        </div>
+                        <div class="search_btn">
+                            <button class="boxed-btn4" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+ {% include 'user/commonDestinations.html' %}
+
+</body>
+</html>

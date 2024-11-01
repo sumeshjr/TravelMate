@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users</title>
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* Style the container */
+    .container {
+        margin-top: 20px;
+    }
+
+    /* Table header styling */
+    th {
+        text-align: center;
+        background-color: #343a40; /* Dark background for header */
+        color: #fff; /* White text color */
+    }
+
+    /* Table row hover effect */
+    tbody tr:hover {
+        background-color: #f1f1f1; /* Light grey on hover */
+    }
+
+    /* Style the delete button */
+    .btn-danger {
+        transition: background-color 0.3s ease;
+    }
+
+    /* Change button color on hover */
+    .btn-danger:hover {
+        background-color: #c82333; /* Darker red on hover */
+        color: white;
+    }
+</style>
+<body>
+    
+  <!-- Check if the user is authenticated -->
+ {% if user.is_authenticated %}
+    
+ <!-- Check if the user is an agency owner -->
+ {% if user.agency %}
+     {% include 'agency/header.html' %}
+ 
+ <!-- Check if the user is a staff member (admin) -->
+ {% elif user.is_staff %}
+     {% include 'travelAdmin/header.html' %}
+ 
+ <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+ {% else %}
+     {% include 'user/header.html' %}
+ {% endif %}
+ 
+<!-- If the user is not authenticated -->
+{% else %}
+ {% include 'header.html' %}
+{% endif %}
+
+
+
+    <h1>All Users</h1>
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Address</th>
+                <th>Mobile Number</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.address }}</td>
+                <td>{{ user.phone_number }}</td>
+                <td>
+                    <form action="{% url 'delete_user' user.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" 
+                        onclick="return confirm('Do you want to delete {{ user.first_name }} {{ user.last_name }}?');">
+                            <i class="fas fa-trash-alt"></i> <!-- Font Awesome trash icon -->
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="{% url 'admin_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

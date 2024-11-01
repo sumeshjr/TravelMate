@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Tour Package</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .btn {
+            color: #fff;
+            background-color: #d9534f;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .btn-secondary {
+            background-color: #5bc0de;
+        }
+    </style>
+</head>
+<body>
+    
+  <!-- Check if the user is authenticated -->
+ {% if user.is_authenticated %}
+    
+ <!-- Check if the user is an agency owner -->
+ {% if user.agency %}
+     {% include 'agency/header.html' %}
+ 
+ <!-- Check if the user is a staff member (admin) -->
+ {% elif user.is_staff %}
+     {% include 'travelAdmin/header.html' %}
+ 
+ <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+ {% else %}
+     {% include 'user/header.html' %}
+ {% endif %}
+ 
+<!-- If the user is not authenticated -->
+{% else %}
+ {% include 'header.html' %}
+{% endif %}
+
+    <div class="container">
+        <h1>Delete Tour Package</h1>
+        <p>Are you sure you want to delete the tour package "{{ tour_package.title }}"?</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn">Confirm Delete</button>
+            <a href="{% url 'tour_package_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

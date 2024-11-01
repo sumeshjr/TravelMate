@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% if vehicle %}Edit Vehicle{% else %}Create Vehicle{% endif %}
+    </title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <!-- Check if the user is authenticated -->
+    {% if user.is_authenticated %}
+
+    <!-- Check if the user is an agency owner -->
+    {% if user.agency %} {% include 'agency/header.html' %}
+
+    <!-- Check if the user is a staff member (admin) -->
+    {% elif user.is_staff %} {% include 'travelAdmin/header.html' %}
+
+    <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+    {% else %} {% include 'user/header.html' %} {% endif %}
+
+    <!-- If the user is not authenticated -->
+    {% else %} {% include 'header.html' %} {% endif %}
+
+    <div class="container mt-5">
+      <h1 class="mb-4">
+        {% if vehicle %}Edit Vehicle{% else %}Create Vehicle{% endif %}
+      </h1>
+
+      <form method="POST" class="mb-4">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label for="vehicle_type">Vehicle Type:</label>
+          <input
+            type="text"
+            name="vehicle_type"
+            id="vehicle_type"
+            class="form-control"
+            value="{{ vehicle.vehicle_type|default:'' }}"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="seats_available">Seats Available:</label>
+          <input
+            type="number"
+            name="seats_available"
+            id="seats_available"
+            class="form-control"
+            value="{{ vehicle.seats_available|default:'' }}"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="registration_number">Registration Number:</label>
+          <input
+            type="text"
+            name="registration_number"
+            id="registration_number"
+            class="form-control"
+            value="{{ vehicle.registration_number|default:'' }}"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          {% if vehicle %}Update{% else %}Create{% endif %}
+        </button>
+        <a href="{% url 'vehicle_list' %}" class="btn btn-secondary"
+          >Back to Vehicle List</a
+        >
+      </form>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

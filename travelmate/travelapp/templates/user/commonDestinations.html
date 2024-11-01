@@ -1,0 +1,50 @@
+{% block content %} {% load static %}
+<div class="container">
+  <div class="section_title text-center mb_70">
+    <h3>Tour Packages</h3>
+  </div>
+  <div class="row">
+    {% for package in packages %}
+    <div class="col-lg-4 col-md-6">
+      <div class="single_trip mb-4">
+        <div class="thumb">
+          {% if package.package_image %}
+          <img
+            src="{{ package.package_image.url }}"
+            alt="{{ package.title }}"
+            class="img-fluid"
+          />
+          {% else %}
+          <img
+            src="{% static 'default_image.jpg' %}"
+            alt="Default Image"
+            class="img-fluid"
+          />
+          {% endif %}
+        </div>
+        <div class="info">
+          <div class="date">
+            <span
+              >Start: {{ package.start_date }} | End: {{package.end_date}}</span
+            >
+          </div>
+          <a href="#">
+            <h3>{{ package.title }}</h3>
+          </a>
+          <p>{{ package.description|truncatewords:20 }}</p>
+          <p><strong>Price:</strong> ₹{{ package.price }}</p>
+          <p>
+            <strong>Availability:</strong> {{ package.availability }} seats left
+          </p>
+          <a
+            href="{% url 'book_package' package.pk %}"
+            class="btn btn-primary mt-2"
+            >Book Now</a
+          >
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

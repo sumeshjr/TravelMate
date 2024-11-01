@@ -1,0 +1,44 @@
+{% block content %} {% load static %}
+
+<!-- Check if the user is authenticated -->
+{% if user.is_authenticated %}
+
+<!-- Check if the user is an agency owner -->
+{% if user.agency %} {% include 'agency/header.html' %}
+
+<!-- Check if the user is a staff member (admin) -->
+{% elif user.is_staff %} {% include 'travelAdmin/header.html' %}
+
+<!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+{% else %} {% include 'user/header.html' %} {% endif %}
+
+<!-- If the user is not authenticated -->
+{% else %} {% include 'header.html' %} {% endif %}
+<!-- Travel Agencies Section -->
+<div class="container">
+    <div class="section_title text-center mb-5">
+        <h3>Travel Agencies</h3>
+    </div>
+    <div class="row">
+        {% for agency in agencies %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card">
+                {% if agency.agency_image %}
+                <img src="{{ agency.agency_image.url }}" alt="{{ agency.name }} Image" class="card-img-top" />
+                {% else %}
+                <p>No image found</p>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ agency.name }}</h5>
+                    <p class="card-text"><strong>Address:</strong> {{ agency.address }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ agency.contact_email }}</p>
+                    <p class="card-text"><strong>Contact Number:</strong> {{ agency.contact_number }}</p>
+                    <a href="{% url 'view_agency_packages' agency.id %}" class="btn btn-primary">View Packages</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

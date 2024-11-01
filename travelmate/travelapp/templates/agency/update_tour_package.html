@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Tour Package</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">  <!-- Optional: Add your CSS file -->
+</head>
+<body>
+
+    
+  <!-- Check if the user is authenticated -->
+ {% if user.is_authenticated %}
+    
+ <!-- Check if the user is an agency owner -->
+ {% if user.agency %}
+     {% include 'agency/header.html' %}
+ 
+ <!-- Check if the user is a staff member (admin) -->
+ {% elif user.is_staff %}
+     {% include 'travelAdmin/header.html' %}
+ 
+ <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+ {% else %}
+     {% include 'user/header.html' %}
+ {% endif %}
+ 
+<!-- If the user is not authenticated -->
+{% else %}
+ {% include 'header.html' %}
+{% endif %}
+
+    <h1>Update Tour Package: {{ tour_package.title }}</h1>
+    <form method="POST" action="{% url 'update_tour_package' tour_package.id %}">
+        {% csrf_token %}
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" value="{{ tour_package.title }}" required><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required>{{ tour_package.description }}</textarea><br><br>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" step="0.01" value="{{ tour_package.price }}" required><br><br>
+
+        <label for="availability">Availability:</label>
+        <input type="number" id="availability" name="availability" value="{{ tour_package.availability }}" required><br><br>
+
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ tour_package.start_date }}" required><br><br>
+
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ tour_package.end_date }}" required><br><br>
+
+        <label for="vehicles">Select Vehicles:</label>
+        <select id="vehicles" name="vehicles" multiple>
+            {% for vehicle in vehicles %}
+                <option value="{{ vehicle.id }}" {% if vehicle in tour_package.vehicles.all %}selected{% endif %}>{{ vehicle }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="routes">Select Routes:</label>
+        <select id="routes" name="routes" multiple>
+            {% for route in routes %}
+                <option value="{{ route.id }}" {% if route in tour_package.routes.all %}selected{% endif %}>{{ route }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Update Tour Package</button>
+    </form>
+    <a href="{% url 'tour_package_list' %}">Back to Tour Packages</a>
+</body>
+</html>

@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Profile</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <!-- jQuery and Bootstrap JS -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</head>
+<body>
+    <!-- Check if the user is authenticated -->
+    {% if user.is_authenticated %}
+        {% if user.agency %}
+            {% include 'agency/header.html' %}
+        {% elif user.is_staff %}
+            {% include 'travelAdmin/header.html' %}
+        {% else %}
+            {% include 'user/header.html' %}
+        {% endif %}
+    {% else %}
+        {% include 'header.html' %}
+    {% endif %}
+
+    <!-- Display messages -->
+    {% if messages %}
+    <div class="alert alert-info mt-3">
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>{{ agency.name }}</h2>
+                <!-- Button to trigger the modal -->
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#updateProfileModal">
+                    Update Profile
+                </button>
+            </div>
+            <div class="card-body">
+                {% if agency.agency_image %}
+                <div class="text-center mb-4">
+                    <img src="{{ agency.agency_image.url }}" alt="Agency Image" class="img-fluid rounded-circle" width="150">
+                </div>
+                {% endif %}
+                <p><strong>Address:</strong> {{ agency.address }}</p>
+                <p><strong>Contact Email:</strong> {{ agency.contact_email }}</p>
+                <p><strong>Contact Number:</strong> {{ agency.contact_number }}</p>
+                {% if agency.website %}
+                <p>
+                    <strong>Website:</strong>
+                    <a href="{{ agency.website }}" target="_blank">{{ agency.website }}</a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for updating agency profile -->
+    <div class="modal fade" id="updateProfileModal" tabindex="-1" role="dialog" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateProfileModalLabel">Update Agency Profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'update_agency_profile' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="agency_name">Agency Name</label>
+                            <input type="text" class="form-control" id="agency_name" name="agency_name" value="{{ agency.name }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea class="form-control" id="address" name="address" required>{{ agency.address }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_email">Contact Email</label>
+                            <input type="email" class="form-control" id="contact_email" name="contact_email" value="{{ agency.contact_email }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_number">Contact Number</label>
+                            <input type="text" class="form-control" id="contact_number" name="contact_number" value="{{ agency.contact_number }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="website">Website</label>
+                            <input type="url" class="form-control" id="website" name="website" value="{{ agency.website }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="agency_image">Agency Image</label>
+                            <input type="file" class="form-control-file" id="agency_image" name="agency_image" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

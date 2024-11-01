@@ -1,0 +1,55 @@
+<!-- Check if the user is authenticated -->
+{% if user.is_authenticated %}
+
+    <!-- Check if the user is an agency owner -->
+    {% if user.agency %}
+        {% include 'agency/header.html' %}
+
+    <!-- Check if the user is a staff member (admin) -->
+    {% elif user.is_staff %}
+        {% include 'travelAdmin/header.html' %}
+
+    <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+    {% else %}
+        {% include 'user/header.html' %}
+    {% endif %}
+
+<!-- If the user is not authenticated -->
+{% else %}
+    {% include 'header.html' %}
+{% endif %}
+
+{% load static %}
+<div class="container">
+    <h1 class="my-4">Packages for {{ agency.name }}</h1>
+    <div class="row">
+        {% if packages %}
+            {% for package in packages %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100">
+                    {% if package.package_image %}
+                    <img src="{{ package.package_image.url }}" class="card-img-top" alt="{{ package.title }}">
+                    {% else %}
+                    <img src="{% static 'default_image.jpg' %}" class="card-img-top" alt="Default Image">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ package.title }}</h5>
+                        <p class="card-text">{{ package.description|truncatewords:20 }}</p>
+                        <p><strong>Price:</strong> (₹) {{ package.price }}</p>
+                        <p><strong>Availability:</strong> {{ package.availability }} spots left</p>
+                        <p><strong>Start Date:</strong> {{ package.start_date }}</p>
+                        <p><strong>End Date:</strong> {{ package.end_date }}</p>
+                        <div class="mt-auto">
+                            <a href="{% url 'book_package' package.pk %}" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <p>No packages available for this agency.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>

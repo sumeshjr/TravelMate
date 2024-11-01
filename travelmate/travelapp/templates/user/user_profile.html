@@ -1,0 +1,174 @@
+{% block content %}
+{% load static %}
+
+ 
+  <!-- Check if the user is authenticated -->
+  {% if user.is_authenticated %}
+    
+  <!-- Check if the user is an agency owner -->
+  {% if user.agency %}
+      {% include 'agency/header.html' %}
+  
+  <!-- Check if the user is a staff member (admin) -->
+  {% elif user.is_staff %}
+      {% include 'travelAdmin/header.html' %}
+  
+  <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+  {% else %}
+      {% include 'user/header.html' %}
+  {% endif %}
+  
+ <!-- If the user is not authenticated -->
+ {% else %}
+  {% include 'header.html' %}
+ {% endif %}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-center">
+            <h2>User Profile</h2>
+            <!-- Button to trigger the modal -->
+            <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                data-toggle="modal"
+                data-target="#updateProfileModal"
+            >
+                Update Profile
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="text-center mb-4">
+                {% if user.userprofile.profile_picture %}
+                    <img
+                        src="{{ user.userprofile.profile_picture.url }}"
+                        alt="Profile Picture"
+                        class="img-fluid rounded-circle"
+                        width="150"
+                    />
+                {% else %}
+                    <img
+                        src="{% static 'images/default-profile.jpg' %}"
+                        alt="Default Profile Picture"
+                        class="img-fluid rounded-circle"
+                        width="150"
+                    />
+                {% endif %}
+            </div>
+            <p><strong>Name:</strong> {{ user.userprofile.first_name }} {{ user.userprofile.last_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Contact Number:</strong> {{ user.userprofile.phone_number }}</p>
+            <p><strong>Address:</strong> {{ user.userprofile.address }}</p>
+            <p><strong>Date of Birth:</strong> {{ user.userprofile.date_of_birth|date:"F j, Y" }}</p>
+            <p><strong>Bio:</strong> {{ user.userprofile.bio }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for updating user profile -->
+<div
+    class="modal fade"
+    id="updateProfileModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="updateProfileModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateProfileModalLabel">
+                    Update User Profile
+                </h5>
+                <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'update_user_profile' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="first_name"
+                            name="first_name"
+                            value="{{ user.userprofile.first_name }}"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="last_name"
+                            name="last_name"
+                            value="{{ user.userprofile.last_name }}"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Contact Number</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="phone_number"
+                            name="phone_number"
+                            value="{{ user.userprofile.phone_number }}"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea
+                            class="form-control"
+                            id="address"
+                            name="address"
+                        >{{ user.userprofile.address }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="date_of_birth">Date of Birth</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="date_of_birth"
+                            name="date_of_birth"
+                            value="{{ user.userprofile.date_of_birth|date:'Y-m-d' }}"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea
+                            class="form-control"
+                            id="bio"
+                            name="bio"
+                        >{{ user.userprofile.bio }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile_picture">Profile Picture</label>
+                        <input
+                            type="file"
+                            class="form-control"
+                            id="profile_picture"
+                            name="profile_picture"
+                            accept="image/*"
+                        />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Update Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% endblock %}

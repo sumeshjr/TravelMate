@@ -1,0 +1,93 @@
+{% load static %}
+
+   
+  <!-- Check if the user is authenticated -->
+  {% if user.is_authenticated %}
+    
+  <!-- Check if the user is an agency owner -->
+  {% if user.agency %}
+      {% include 'agency/header.html' %}
+  
+  <!-- Check if the user is a staff member (admin) -->
+  {% elif user.is_staff %}
+      {% include 'travelAdmin/header.html' %}
+  
+  <!-- If the user is a normal authenticated user (not admin, not agency owner) -->
+  {% else %}
+      {% include 'user/header.html' %}
+  {% endif %}
+  
+ <!-- If the user is not authenticated -->
+ {% else %}
+  {% include 'header.html' %}
+ {% endif %}
+ 
+      <!-- Display messages -->
+      {% if messages %}
+      <div class="alert alert-info mt-3">
+          {% for message in messages %}
+              <div>{{ message }}</div>
+          {% endfor %}
+      </div>
+  {% endif %}
+ 
+  {% include 'user/commonDestinations.html' %}
+ 
+
+  <div class="container mt-5">
+    <h1 class="mb-4">Your Bookings</h1>
+
+    {% if bookings %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Package</th>
+                        <th>Agency</th> <!-- New column for agency -->
+                        <th>Booking Date</th>
+                        <th>Number of People</th>
+                        <th>Total Cost</th>
+                        <th>Payment Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.tour_package.title }}</td>
+                            <td>{{ booking.tour_package.agency.name }}</td> <!-- Display agency name -->
+                            <td>{{ booking.booking_date|date:"d M Y H:i" }}</td>
+                            <td>{{ booking.num_people }}</td>
+                            <td>₹{{ booking.total_cost }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if booking.payment_status == 'Paid' %}
+                                        bg-success
+                                    {% elif booking.payment_status == 'Pending' %}
+                                        bg-warning
+                                    {% else %}
+                                        bg-danger
+                                    {% endif %}
+                                ">
+                                    {{ booking.payment_status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if booking.payment_status == 'Pending' %}
+                                    <a href="{% url 'pay_booking' booking.id %}" class="btn btn-success btn-sm">Pay Now</a>
+                                    <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-danger btn-sm">Cancel</a>
+                                {% else %}
+                                    <button class="btn btn-secondary btn-sm" disabled>No Action</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p>You have no bookings.</p>
+        </div>
+    {% endif %}
+</div>
